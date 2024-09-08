@@ -3,6 +3,9 @@ import emailjs from 'emailjs-com';
 import Confetti from 'react-confetti';
 import { useWindowSize } from 'react-use';
 
+import Logo from './assets/logo.png';  // Adjust the path based on the actual file location
+
+
 const App: React.FC = () => {
   const [weight, setWeight] = useState<string>('');
   const [volume, setVolume] = useState<string>('');
@@ -77,15 +80,23 @@ const App: React.FC = () => {
   };
 
   return (
+    
     <div className="relative min-h-screen flex flex-col items-center justify-center bg-gray-50">
       {/* Confetti */}
       {confettiVisible && <Confetti width={width} height={height} />}
+      <img src={Logo} alt="Freitan Logo" className="w-24 mx-auto mb-6" />
 
       {/* Background Design */}
       <div className="absolute inset-0 w-full h-full">
         <div className="h-[50%] bg-gray-100"></div>
         <div className="h-[50%] bg-customRed" style={{ clipPath: 'polygon(0 10%, 100% 0%, 100% 100%, 0% 90%)' }}></div>
       </div>
+
+      {/* Logo Section - Positioned in the top right */}
+      <div className="absolute top-4 left-4 z-20">
+        <img src={Logo} alt="Freitan Logo" className="w-24 h-auto" />
+      </div>
+    
 
       {/* Form Section */}
       <div className="relative z-10 bg-white p-8 md:p-10 rounded-xl shadow-lg w-full max-w-md">
