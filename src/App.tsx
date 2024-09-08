@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, Fragment } from 'react';
 import emailjs from 'emailjs-com';
 import Confetti from 'react-confetti';
 import { useWindowSize } from 'react-use';
+import { Dialog, Transition } from '@headlessui/react';  // Tailwind UI modal component
 
 import Logo from './assets/logo.png';  // Adjust the path based on the actual file location
-
 
 const App: React.FC = () => {
   const [weight, setWeight] = useState<string>('');
   const [volume, setVolume] = useState<string>('');
+  const [cargoReadyDate, setCargoReadyDate] = useState<string>('');  // New state for Cargo Ready Date
   const [email, setEmail] = useState<string>('');
   const [showEmailPopup, setShowEmailPopup] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -29,7 +30,7 @@ const App: React.FC = () => {
   const handleRequestRate = (e: React.FormEvent) => {
     e.preventDefault();
     // Basic form validation
-    if (!weight || !volume) {
+    if (!weight || !volume || !cargoReadyDate) {
       setFormError('Please fill in all fields before requesting the rate.');
       return;
     }
@@ -55,6 +56,7 @@ const App: React.FC = () => {
       destination: 'Johannesburg',  // Static destination value
       weight: weight,         // Pass form weight
       volume: volume,         // Pass form volume
+      cargoReadyDate: cargoReadyDate, // Pass Cargo Ready Date
       email: email,           // Pass user's email
     };
 
@@ -80,23 +82,20 @@ const App: React.FC = () => {
   };
 
   return (
-    
     <div className="relative min-h-screen flex flex-col items-center justify-center bg-gray-50">
       {/* Confetti */}
       {confettiVisible && <Confetti width={width} height={height} />}
-      <img src={Logo} alt="Freitan Logo" className="w-24 mx-auto mb-6" />
-
+      
       {/* Background Design */}
       <div className="absolute inset-0 w-full h-full">
         <div className="h-[50%] bg-gray-100"></div>
         <div className="h-[50%] bg-customRed" style={{ clipPath: 'polygon(0 10%, 100% 0%, 100% 100%, 0% 90%)' }}></div>
       </div>
 
-      {/* Logo Section - Positioned in the top right */}
+      {/* Logo Section - Positioned in the top left */}
       <div className="absolute top-4 left-4 z-20">
         <img src={Logo} alt="Freitan Logo" className="w-24 h-auto" />
       </div>
-    
 
       {/* Form Section */}
       <div className="relative z-10 bg-white p-8 md:p-10 rounded-xl shadow-lg w-full max-w-md">
@@ -143,7 +142,7 @@ const App: React.FC = () => {
               type="number"
               value={weight}
               onChange={(e) => setWeight(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-300"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-customRed"
               required
             />
           </div>
@@ -155,10 +154,23 @@ const App: React.FC = () => {
               type="number"
               value={volume}
               onChange={(e) => setVolume(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-300"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-customRed"
               required
             />
           </div>
+        </div>
+
+        {/* Cargo Ready Date */}
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold text-gray-700 mb-3">Cargo Ready Date</h2>
+          <label className="block text-sm font-medium text-gray-600 mb-1">Select Date</label>
+          <input
+            type="date"
+            value={cargoReadyDate}
+            onChange={(e) => setCargoReadyDate(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-plum"
+            required
+          />
         </div>
 
         {/* Request Rate Button */}
@@ -199,81 +211,122 @@ const App: React.FC = () => {
         </button>
       </div>
 
-      {/* Email Popup */}
-      {showEmailPopup && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
-            <h2 className="text-xl font-bold mb-4 text-gray-800">Enter Your Email Address</h2>
-            {error && <p className="text-red-500 mb-4">{error}</p>}
+      {/* Email Popup (Tailwind UI Modal) */}
+      <Transition appear show={showEmailPopup} as={Fragment}>
+        <Dialog as="div" className="relative z-50" onClose={() => setShowEmailPopup(false)}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-50" />
+          </Transition.Child>
 
-            {/* Email Input */}
-            <div className="mb-5">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200"
-                placeholder="Email Address"
-                required
-              />
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex items-center justify-center min-h-full p-4 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                  <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+                    Enter Your Email Address
+                  </Dialog.Title>
+
+                  {error && <p className="text-red-500 mb-4">{error}</p>}
+
+                  {/* Email Input */}
+                  <div className="mt-2">
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-customRed"
+                      placeholder="Email Address"
+                      required
+                    />
+                  </div>
+
+                  {/* Send Request Button */}
+                  <div className="mt-4">
+                    <button
+                      type="button"
+                      onClick={sendEmail}
+                      disabled={loading}
+                      className={`inline-flex justify-center rounded-md border border-transparent bg-plum px-4 py-2 text-sm font-medium text-white hover:bg-plum-dark focus:outline-none focus:ring-2 focus:ring-plum focus:ring-offset-2 ${
+                        loading ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
+                    >
+                      {loading ? 'Sending...' : 'Send Request'}
+                    </button>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
             </div>
-
-            {/* Send Request Button */}
-            <button
-              type="submit"
-              onClick={sendEmail}
-              disabled={loading}
-              className={`bg-plum text-white py-3 px-5 rounded-lg w-full hover:bg-plum-dark focus:ring-4 focus:ring-purple-300 active:bg-purple-800 transition-all duration-300 ease-in-out shadow-md ${
-                loading ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
-            >
-              {loading ? (
-                <span className="flex items-center justify-center">
-                  <svg
-                    className="animate-spin h-5 w-5 mr-2"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8v8H4z"
-                    ></path>
-                  </svg>
-                  Sending...
-                </span>
-              ) : (
-                'Send Request'
-              )}
-            </button>
           </div>
-        </div>
-      )}
+        </Dialog>
+      </Transition>
 
-      {/* Confirmation Pop-up */}
-      {showConfirmationPopup && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
-            <h2 className="text-xl font-bold mb-4 text-gray-800">Thank you!</h2>
-            <p className="text-gray-600">Our pricing desk from Freitan is now working on your request and will be in touch shortly.</p>
-            <button
-              onClick={() => setShowConfirmationPopup(false)}
-              className="bg-plum text-white py-2 px-4 rounded-lg mt-4"
-            >
-              Close
-            </button>
+      {/* Confirmation Popup (Tailwind UI Modal) */}
+      <Transition appear show={showConfirmationPopup} as={Fragment}>
+        <Dialog as="div" className="relative z-50" onClose={() => setShowConfirmationPopup(false)}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-50" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex items-center justify-center min-h-full p-4 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                  <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+                    Thank You!
+                  </Dialog.Title>
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-500">
+                      Our pricing desk is working on your request. You'll receive a response soon.
+                    </p>
+                  </div>
+
+                  <div className="mt-4">
+                    <button
+                      type="button"
+                      className="inline-flex justify-center rounded-md border border-transparent bg-plum px-4 py-2 text-sm font-medium text-white hover:bg-plum-dark focus:outline-none focus:ring-2 focus:ring-plum focus:ring-offset-2"
+                      onClick={() => setShowConfirmationPopup(false)}
+                    >
+                      Close
+                    </button>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
           </div>
-        </div>
-      )}
+        </Dialog>
+      </Transition>
     </div>
   );
 };
