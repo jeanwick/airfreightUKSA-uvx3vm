@@ -87,18 +87,13 @@ const App: React.FC = () => {
       {confettiVisible && <Confetti width={width} height={height} />}
       
       {/* Background Design */}
-      <div className="absolute inset-0 w-full h-full">
+      <div className="absolute inset-0 w-full h-full z-0"> {/* Set z-index to 0 for background */}
         <div className="h-[50%] bg-gray-100"></div>
         <div className="h-[50%] bg-customRed" style={{ clipPath: 'polygon(0 10%, 100% 0%, 100% 100%, 0% 90%)' }}></div>
       </div>
 
-      {/* Logo Section - Positioned in the top left with responsive margin */}
-      <div className="absolute top-4 left-4 z-20">
-        <img src={Logo} alt="Freitan Logo" className="w-24 h-auto sm:w-32 md:w-40 lg:w-48 mb-6 sm:mb-8" />
-      </div>
-
       {/* Form Section */}
-      <div className="relative z-10 bg-white p-8 md:p-10 rounded-xl shadow-lg w-full max-w-md mt-20 sm:mt-32"> {/* Added margin-top for mobile */}
+      <div className="relative z-10 bg-white p-8 md:p-10 rounded-xl shadow-lg w-full max-w-md mt-6">
         <h1 className="text-3xl font-bold mb-6 text-gray-800">Airfreight Rate Request</h1>
 
         {/* Error message if form validation fails */}
@@ -210,6 +205,14 @@ const App: React.FC = () => {
           )}
         </button>
       </div>
+
+      {/* Footer Section */}
+      <footer className="relative w-full bg-white py-4 mt-10 z-20"> {/* Set z-index to ensure it's on top */}
+        <div className="max-w-md mx-auto flex items-center justify-center">
+          <span className="text-sm text-gray-500 mr-2">Powered by</span>
+          <img src={Logo} alt="Freitan Logo" className="w-16 h-auto" />
+        </div>
+      </footer>
 
       {/* Email Popup (Tailwind UI Modal) */}
       <Transition appear show={showEmailPopup} as={Fragment}>
