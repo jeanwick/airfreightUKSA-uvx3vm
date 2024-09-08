@@ -82,7 +82,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center bg-gray-50">
+    <div className="flex flex-col min-h-screen justify-between items-center bg-gray-50">
       {/* Confetti */}
       {confettiVisible && <Confetti width={width} height={height} />}
       
@@ -93,18 +93,18 @@ const App: React.FC = () => {
       </div>
 
       {/* Form Section */}
-      <div className="relative z-10 bg-white p-8 md:p-10 rounded-xl shadow-lg w-full max-w-md mt-6">
-        <h1 className="text-3xl font-bold mb-6 text-gray-800">Airfreight Rate Request</h1>
+      <div className="relative z-10 bg-white p-6 sm:p-8 md:p-10 rounded-xl shadow-lg w-full max-w-sm sm:max-w-md mx-auto mt-6 mb-8"> {/* Added mb-8 for padding */}
+        <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-gray-800">Airfreight Rate Request</h1>
 
         {/* Error message if form validation fails */}
         {formError && <p className="text-red-500 mb-4">{formError}</p>}
 
         {/* Shipment Information */}
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold text-gray-700 mb-3">Shipment Information</h2>
+        <div className="mb-4 sm:mb-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-700 mb-2 sm:mb-3">Shipment Information</h2>
 
           {/* Origin Field (Read-only) */}
-          <div className="mb-4">
+          <div className="mb-3">
             <label className="block text-sm font-medium text-gray-600 mb-1">Origin</label>
             <input
               type="text"
@@ -115,7 +115,7 @@ const App: React.FC = () => {
           </div>
 
           {/* Destination Field (Read-only) */}
-          <div className="mb-4">
+          <div className="mb-3">
             <label className="block text-sm font-medium text-gray-600 mb-1">Destination</label>
             <input
               type="text"
@@ -127,11 +127,11 @@ const App: React.FC = () => {
         </div>
 
         {/* Freight Details */}
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold text-gray-700 mb-3">Freight Details</h2>
+        <div className="mb-4 sm:mb-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-700 mb-2 sm:mb-3">Freight Details</h2>
 
           {/* Weight Input */}
-          <div className="mb-4">
+          <div className="mb-3">
             <label className="block text-sm font-medium text-gray-600 mb-1">Weight (kg)</label>
             <input
               type="number"
@@ -143,7 +143,7 @@ const App: React.FC = () => {
           </div>
 
           {/* Volume Input */}
-          <div className="mb-4">
+          <div className="mb-3">
             <label className="block text-sm font-medium text-gray-600 mb-1">Volume (m³)</label>
             <input
               type="number"
@@ -156,8 +156,8 @@ const App: React.FC = () => {
         </div>
 
         {/* Cargo Ready Date */}
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold text-gray-700 mb-3">Cargo Ready Date</h2>
+        <div className="mb-4 sm:mb-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-700 mb-2 sm:mb-3">Cargo Ready Date</h2>
           <label className="block text-sm font-medium text-gray-600 mb-1">Select Date</label>
           <input
             type="date"
@@ -172,7 +172,7 @@ const App: React.FC = () => {
         <button
           type="submit"
           onClick={handleRequestRate}
-          className={`bg-plum hover:bg-plum-dark text-white py-3 px-5 rounded-lg w-full transition-all duration-300 ease-in-out shadow-md ${
+          className={`bg-plum hover:bg-plum-dark text-white py-2 px-5 sm:py-3 rounded-lg w-full transition-all duration-300 ease-in-out shadow-md ${
             loading ? 'opacity-50 cursor-not-allowed' : ''
           }`}
         >
@@ -207,7 +207,7 @@ const App: React.FC = () => {
       </div>
 
       {/* Footer Section */}
-      <footer className="relative w-full bg-white py-4 mt-10 z-20"> {/* Set z-index to ensure it's on top */}
+      <footer className="relative w-full bg-white py-4 z-20"> {/* Set z-index to ensure it's on top */}
         <div className="max-w-md mx-auto flex items-center justify-center">
           <span className="text-sm text-gray-500 mr-2">Powered by</span>
           <img src={Logo} alt="Freitan Logo" className="w-16 h-auto" />
