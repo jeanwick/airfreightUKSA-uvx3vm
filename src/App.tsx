@@ -133,13 +133,13 @@ const App: React.FC = () => {
 
     // Send email to you with form details
     emailjs
-      .send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams, 'YOUR_USER_ID')
+      .send('service_hd4chrs', 'template_5ynm0vp', templateParams, 'AXz_LUkKIdRAnqjXk')
       .then(() => {
         // Now send the confirmation email to the user
         const userTemplateParams = {
           user_email: email, // Send confirmation to the user's email
         };
-        return emailjs.send('YOUR_SERVICE_ID', 'YOUR_USER_CONFIRMATION_TEMPLATE_ID', userTemplateParams, 'YOUR_USER_ID');
+        return emailjs.send('service_hd4chrs', 'template_mpbou6k', userTemplateParams, 'AXz_LUkKIdRAnqjXk');
       })
       .then(() => {
         setLoading(false);
