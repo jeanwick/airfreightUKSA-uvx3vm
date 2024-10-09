@@ -126,14 +126,14 @@ const App: React.FC = () => {
 
       {/* Form Section */}
       <div className="relative z-10 bg-white p-6 sm:p-8 md:p-10 rounded-xl shadow-lg w-full max-w-sm sm:max-w-md mx-auto mt-6 mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-gray-800">Airfreight Rate Request</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-gray-800">Tell Us About Your Shipment</h1>
 
         {/* Error message if form validation fails */}
         {formError && <p className="text-red-500 mb-4">{formError}</p>}
 
         {/* Shipment Information */}
         <div className="mb-4 sm:mb-6">
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-700 mb-2 sm:mb-3">Shipment Information</h2>
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-700 mb-2 sm:mb-3">Your Shipment</h2>
 
           {/* Origin Field (Read-only) */}
           <div className="mb-3">
@@ -160,7 +160,7 @@ const App: React.FC = () => {
 
         {/* Freight Details */}
         <div className="mb-4 sm:mb-6">
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-700 mb-2 sm:mb-3">Freight Details</h2>
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-700 mb-2 sm:mb-3">Cargo Details</h2>
 
           {/* Weight Input */}
           <div className="mb-3">
@@ -233,7 +233,7 @@ const App: React.FC = () => {
               Sending...
             </span>
           ) : (
-            'Request a Quote'
+            'Get Started'
           )}
         </button>
       </div>
