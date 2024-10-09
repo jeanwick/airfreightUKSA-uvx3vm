@@ -3,7 +3,7 @@ import emailjs from 'emailjs-com';
 import Confetti from 'react-confetti';
 import { useWindowSize } from 'react-use';
 import { Dialog, Transition } from '@headlessui/react'; // Tailwind UI modal component
-import { FaPlane } from 'react-icons/fa'; // Import the plane icon
+import { FaPlane, FaTimes } from 'react-icons/fa'; // Import the plane and times (X) icons
 
 import Logo from './assets/logo.png'; // Adjust the path based on the actual file location
 
@@ -325,10 +325,18 @@ const App: React.FC = () => {
                 leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                 leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
               >
-                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                <Dialog.Panel className="relative w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                  {/* Close Icon */}
+                  <button
+                    onClick={() => setShowEmailPopup(false)}
+                    className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 focus:outline-none"
+                  >
+                    <FaTimes className="w-5 h-5" />
+                  </button>
+
                   {/* Progress Indicator */}
-                  <div className="mb-4">
-                    <div className="flex items-center justify-center">
+                  <div className="mb-4 mt-2">
+                    <div className="flex items-center justify-center space-x-2">
                       <div
                         className={`w-8 h-8 rounded-full flex items-center justify-center ${
                           currentStep >= 1 ? 'bg-plum text-white' : 'bg-gray-200 text-gray-500'
@@ -336,7 +344,7 @@ const App: React.FC = () => {
                       >
                         1
                       </div>
-                      <div className={`flex-1 h-1 ${currentStep > 1 ? 'bg-plum' : 'bg-gray-200'}`}></div>
+                      <div className={`h-1 w-8 ${currentStep > 1 ? 'bg-plum' : 'bg-gray-200'}`}></div>
                       <div
                         className={`w-8 h-8 rounded-full flex items-center justify-center ${
                           currentStep >= 2 ? 'bg-plum text-white' : 'bg-gray-200 text-gray-500'
@@ -417,17 +425,7 @@ const App: React.FC = () => {
                     )}
 
                     {/* Buttons */}
-                    <div className="mt-6 flex justify-between">
-                      {currentStep > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => setCurrentStep(currentStep - 1)}
-                          className="inline-flex justify-center rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none"
-                        >
-                          Back
-                        </button>
-                      )}
-                      <div className="flex-1"></div>
+                    <div className="mt-6 flex justify-end">
                       <button
                         type="submit"
                         disabled={loading}
