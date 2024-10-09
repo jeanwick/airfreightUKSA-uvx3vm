@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, useEffect } from 'react';
 import emailjs from 'emailjs-com';
 import Confetti from 'react-confetti';
 import { useWindowSize } from 'react-use';
@@ -6,6 +6,15 @@ import { Dialog, Transition } from '@headlessui/react'; // Tailwind UI modal com
 import { FaPlane, FaTimes } from 'react-icons/fa'; // Import the plane and times (X) icons
 
 import Logo from './assets/logo.png'; // Adjust the path based on the actual file location
+
+declare global {
+  interface Window {
+    dataLayer: any[];
+    gtag: (...args: any[]) => void;
+  }
+}
+
+const TRACKING_ID = 'G-BB4Y6S2MZ0'; // Replace with your Tracking ID
 
 const App: React.FC = () => {
   const [weight, setWeight] = useState<string>('');
@@ -24,6 +33,25 @@ const App: React.FC = () => {
   const [showConfirmationPopup, setShowConfirmationPopup] = useState<boolean>(false);
 
   const { width, height } = useWindowSize(); // To get screen size for confetti
+
+  useEffect(() => {
+    // Load the gtag.js script
+    const script = document.createElement('script');
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${TRACKING_ID}`;
+    script.async = true;
+    document.head.appendChild(script);
+
+    // Initialize gtag after the script is loaded
+    script.onload = () => {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(...args: any[]) {
+        window.dataLayer.push(...args);
+      }
+      window.gtag = gtag;
+      gtag('js', new Date());
+      gtag('config', TRACKING_ID);
+    };
+  }, []);
 
   // List of disallowed email domains
   const disallowedDomains = [
@@ -60,6 +88,15 @@ const App: React.FC = () => {
   // Handle the "Get Started" button click
   const handleRequestRate = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Google Analytics Event Tracking
+    if (window.gtag) {
+      window.gtag('event', 'click', {
+        event_category: 'Button',
+        event_label: 'Get Started',
+      });
+    }
+
     // Basic form validation
     if (!weight || !volume || !cargoReadyDate) {
       setFormError('Please fill in all fields before proceeding.');
@@ -88,6 +125,14 @@ const App: React.FC = () => {
   // Handle form submission
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Google Analytics Event Tracking
+    if (window.gtag) {
+      window.gtag('event', 'submit', {
+        event_category: 'Form',
+        event_label: currentStep === 1 ? 'Submitted Step 1' : 'Submitted Step 2',
+      });
+    }
 
     if (currentStep === 1) {
       // Validate Step 1 fields
