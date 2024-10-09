@@ -431,11 +431,20 @@ const App: React.FC = () => {
                       <button
                         type="submit"
                         disabled={loading}
-                        className={`inline-flex justify-center rounded-md border border-transparent bg-plum px-4 py-2 text-sm font-medium text-white hover:bg-plum-dark focus:outline-none focus:ring-2 focus:ring-plum focus:ring-offset-2 ${
+                        className={`inline-flex justify-center rounded-md border border-transparent bg-plum px-4 py-2 text-sm font-medium text-white hover:bg-plum-dark transition-all duration-300 ease-in-out group ${
                           loading ? 'opacity-50 cursor-not-allowed' : ''
                         }`}
                       >
-                        {loading ? 'Processing...' : currentStep === 1 ? 'Next' : 'Submit'}
+                        {loading ? (
+                          'Processing...'
+                        ) : (
+                          <span className="flex items-center">
+                            <span className="block group-hover:hidden">
+                              {currentStep === 1 ? 'Next' : 'Submit'}
+                            </span>
+                            <FaPlane className="hidden group-hover:block w-5 h-5" />
+                          </span>
+                        )}
                       </button>
                     </div>
                   </form>
