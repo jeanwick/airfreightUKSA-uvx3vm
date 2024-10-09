@@ -11,8 +11,7 @@ const App: React.FC = () => {
   const [volume, setVolume] = useState<string>('');
   const [cargoReadyDate, setCargoReadyDate] = useState<string>('');  // New state for Cargo Ready Date
   const [email, setEmail] = useState<string>('');
-  const [firstName, setFirstName] = useState<string>('');  // New state for First Name
-  const [surname, setSurname] = useState<string>('');      // New state for Surname
+  const [fullName, setFullName] = useState<string>('');  // Combined Full Name
   const [companyName, setCompanyName] = useState<string>('');  // New state for Company Name
   const [contactNumber, setContactNumber] = useState<string>(''); // New state for Contact Number
   const [currentStep, setCurrentStep] = useState<number>(1); // State for multi-step form
@@ -25,18 +24,44 @@ const App: React.FC = () => {
 
   const { width, height } = useWindowSize(); // To get screen size for confetti
 
-  // Validation function for email format
+  // List of disallowed email domains
+  const disallowedDomains = [
+    'gmail.com',
+    'yahoo.com',
+    'hotmail.com',
+    'outlook.com',
+    'icloud.com',
+    'aol.com',
+    'live.com',
+    'msn.com',
+    'comcast.net',
+    'me.com',
+    'mail.com',
+    'protonmail.com',
+    // Add any other domains as needed
+  ];
+
+  // Validation function for email format and domain
   const validateEmail = (email: string) => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailPattern.test(email);
+    if (!emailPattern.test(email)) {
+      return false;
+    }
+
+    const domain = email.split('@')[1].toLowerCase();
+    if (disallowedDomains.includes(domain)) {
+      return false;
+    }
+
+    return true;
   };
 
-  // Handle the "Request Rate" button click
+  // Handle the "Get Started" button click
   const handleRequestRate = (e: React.FormEvent) => {
     e.preventDefault();
     // Basic form validation
     if (!weight || !volume || !cargoReadyDate) {
-      setFormError('Please fill in all fields before requesting the rate.');
+      setFormError('Please fill in all fields before proceeding.');
       return;
     }
 
@@ -51,13 +76,13 @@ const App: React.FC = () => {
 
     if (currentStep === 1) {
       // Validate Step 1 fields
-      if (!firstName || !surname || !email) {
+      if (!fullName || !email) {
         setError('Please fill in all the required fields.');
         return;
       }
 
       if (!validateEmail(email)) {
-        setError('Please enter a valid email address.');
+        setError('Please enter a valid work email address.');
         return;
       }
 
@@ -86,8 +111,7 @@ const App: React.FC = () => {
       volume: volume,         // Pass form volume
       cargoReadyDate: cargoReadyDate, // Pass Cargo Ready Date
       email: email,           // Pass user's email
-      firstName: firstName,   // Pass First Name
-      surname: surname,       // Pass Surname
+      fullName: fullName,     // Pass Full Name
       companyName: companyName,   // Pass Company Name
       contactNumber: contactNumber, // Pass Contact Number
     };
@@ -200,7 +224,7 @@ const App: React.FC = () => {
           />
         </div>
 
-        {/* Request Rate Button */}
+        {/* Get Started Button */}
         <button
           type="submit"
           onClick={handleRequestRate}
@@ -295,28 +319,16 @@ const App: React.FC = () => {
                           Step 1: Basic Information
                         </Dialog.Title>
 
-                        {/* First Name Input */}
+                        {/* Full Name Input */}
                         <div className="mt-4">
                           <input
                             type="text"
-                            value={firstName}
-                            onChange={(e) => setFirstName(e.target.value)}
+                            value={fullName}
+                            onChange={(e) => setFullName(e.target.value)}
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-customRed"
-                            placeholder="First Name"
+                            placeholder="Full Name"
                             required
                             autoFocus
-                          />
-                        </div>
-
-                        {/* Surname Input */}
-                        <div className="mt-2">
-                          <input
-                            type="text"
-                            value={surname}
-                            onChange={(e) => setSurname(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-customRed"
-                            placeholder="Surname"
-                            required
                           />
                         </div>
 
@@ -327,7 +339,7 @@ const App: React.FC = () => {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-customRed"
-                            placeholder="Email Address"
+                            placeholder="Work Email Address"
                             required
                           />
                         </div>
@@ -403,11 +415,11 @@ const App: React.FC = () => {
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
+            enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            enterTo="opacity-100 translate-y-0 sm:scale-100"
             leave="ease-in duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
+            leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+            leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
           >
             <div className="fixed inset-0 bg-black bg-opacity-50" />
           </Transition.Child>
