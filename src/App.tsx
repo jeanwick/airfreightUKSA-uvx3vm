@@ -11,6 +11,11 @@ const App: React.FC = () => {
   const [volume, setVolume] = useState<string>('');
   const [cargoReadyDate, setCargoReadyDate] = useState<string>('');  // New state for Cargo Ready Date
   const [email, setEmail] = useState<string>('');
+  const [firstName, setFirstName] = useState<string>('');  // New state for First Name
+  const [surname, setSurname] = useState<string>('');      // New state for Surname
+  const [companyName, setCompanyName] = useState<string>('');  // New state for Company Name
+  const [contactNumber, setContactNumber] = useState<string>(''); // New state for Contact Number
+  const [currentStep, setCurrentStep] = useState<number>(1); // State for multi-step form
   const [showEmailPopup, setShowEmailPopup] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -40,15 +45,38 @@ const App: React.FC = () => {
     setShowEmailPopup(true);
   };
 
-  // Handle email submission
-  const sendEmail = (e: React.FormEvent) => {
+  // Handle form submission
+  const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Validate email before proceeding
-    if (!validateEmail(email)) {
-      setError('Please enter a valid email address.');
-      return;
-    }
 
+    if (currentStep === 1) {
+      // Validate Step 1 fields
+      if (!firstName || !surname || !email) {
+        setError('Please fill in all the required fields.');
+        return;
+      }
+
+      if (!validateEmail(email)) {
+        setError('Please enter a valid email address.');
+        return;
+      }
+
+      setError(null);
+      setCurrentStep(2); // Proceed to next step
+    } else if (currentStep === 2) {
+      // Validate Step 2 fields
+      if (!companyName || !contactNumber) {
+        setError('Please fill in all the required fields.');
+        return;
+      }
+
+      setError(null);
+      sendEmail(); // All validations passed, send the email
+    }
+  };
+
+  // Send email function
+  const sendEmail = () => {
     setLoading(true); // Show loading state while sending the email
 
     const templateParams = {
@@ -58,16 +86,20 @@ const App: React.FC = () => {
       volume: volume,         // Pass form volume
       cargoReadyDate: cargoReadyDate, // Pass Cargo Ready Date
       email: email,           // Pass user's email
+      firstName: firstName,   // Pass First Name
+      surname: surname,       // Pass Surname
+      companyName: companyName,   // Pass Company Name
+      contactNumber: contactNumber, // Pass Contact Number
     };
 
     // Send email to you with form details
-    emailjs.send('service_hd4chrs', 'template_5ynm0vp', templateParams, 'AXz_LUkKIdRAnqjXk')
+    emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams, 'YOUR_USER_ID')
       .then(() => {
         // Now send the confirmation email to the user
         const userTemplateParams = {
           user_email: email,  // Send confirmation to the user's email
         };
-        return emailjs.send('service_hd4chrs', 'template_mpbou6k', userTemplateParams, 'AXz_LUkKIdRAnqjXk');
+        return emailjs.send('YOUR_SERVICE_ID', 'YOUR_USER_CONFIRMATION_TEMPLATE_ID', userTemplateParams, 'YOUR_USER_ID');
       })
       .then(() => {
         setLoading(false);
@@ -87,13 +119,13 @@ const App: React.FC = () => {
       {confettiVisible && <Confetti width={width} height={height} />}
       
       {/* Background Design */}
-      <div className="absolute inset-0 w-full h-full z-0"> {/* Set z-index to 0 for background */}
+      <div className="absolute inset-0 w-full h-full z-0">
         <div className="h-[50%] bg-gray-100"></div>
         <div className="h-[50%] bg-customRed" style={{ clipPath: 'polygon(0 10%, 100% 0%, 100% 100%, 0% 90%)' }}></div>
       </div>
 
       {/* Form Section */}
-      <div className="relative z-10 bg-white p-6 sm:p-8 md:p-10 rounded-xl shadow-lg w-full max-w-sm sm:max-w-md mx-auto mt-6 mb-8"> {/* Added mb-8 for padding */}
+      <div className="relative z-10 bg-white p-6 sm:p-8 md:p-10 rounded-xl shadow-lg w-full max-w-sm sm:max-w-md mx-auto mt-6 mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-gray-800">Airfreight Rate Request</h1>
 
         {/* Error message if form validation fails */}
@@ -201,20 +233,20 @@ const App: React.FC = () => {
               Sending...
             </span>
           ) : (
-            'Request Rate'
+            'Request a Quote'
           )}
         </button>
       </div>
 
       {/* Footer Section */}
-      <footer className="relative w-full bg-white py-4 z-20"> {/* Set z-index to ensure it's on top */}
+      <footer className="relative w-full bg-white py-4 z-20">
         <div className="max-w-md mx-auto flex items-center justify-center">
           <span className="text-sm text-gray-500 mr-2">Powered by</span>
           <img src={Logo} alt="Freitan Logo" className="w-16 h-auto" />
         </div>
       </footer>
 
-      {/* Email Popup (Tailwind UI Modal) */}
+      {/* Multi-Step Email Popup */}
       <Transition appear show={showEmailPopup} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={() => setShowEmailPopup(false)}>
           <Transition.Child
@@ -234,44 +266,130 @@ const App: React.FC = () => {
               <Transition.Child
                 as={Fragment}
                 enter="ease-out duration-300"
-                enterFrom="opacity-0 scale-95"
-                enterTo="opacity-100 scale-100"
+                enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                enterTo="opacity-100 translate-y-0 sm:scale-100"
                 leave="ease-in duration-200"
-                leaveFrom="opacity-100 scale-100"
-                leaveTo="opacity-0 scale-95"
+                leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
               >
                 <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                  <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                    Enter Your Email Address
-                  </Dialog.Title>
+                  {/* Progress Indicator */}
+                  <div className="mb-4">
+                    <div className="flex items-center justify-center">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${currentStep >= 1 ? 'bg-plum text-white' : 'bg-gray-200 text-gray-500'}`}>
+                        1
+                      </div>
+                      <div className={`flex-1 h-1 ${currentStep > 1 ? 'bg-plum' : 'bg-gray-200'}`}></div>
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${currentStep >= 2 ? 'bg-plum text-white' : 'bg-gray-200 text-gray-500'}`}>
+                        2
+                      </div>
+                    </div>
+                  </div>
 
                   {error && <p className="text-red-500 mb-4">{error}</p>}
 
-                  {/* Email Input */}
-                  <div className="mt-2">
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-customRed"
-                      placeholder="Email Address"
-                      required
-                    />
-                  </div>
+                  <form onSubmit={handleFormSubmit}>
+                    {currentStep === 1 && (
+                      <>
+                        <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+                          Step 1: Basic Information
+                        </Dialog.Title>
 
-                  {/* Send Request Button */}
-                  <div className="mt-4">
-                    <button
-                      type="button"
-                      onClick={sendEmail}
-                      disabled={loading}
-                      className={`inline-flex justify-center rounded-md border border-transparent bg-plum px-4 py-2 text-sm font-medium text-white hover:bg-plum-dark focus:outline-none focus:ring-2 focus:ring-plum focus:ring-offset-2 ${
-                        loading ? 'opacity-50 cursor-not-allowed' : ''
-                      }`}
-                    >
-                      {loading ? 'Sending...' : 'Send Request'}
-                    </button>
-                  </div>
+                        {/* First Name Input */}
+                        <div className="mt-4">
+                          <input
+                            type="text"
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-customRed"
+                            placeholder="First Name"
+                            required
+                            autoFocus
+                          />
+                        </div>
+
+                        {/* Surname Input */}
+                        <div className="mt-2">
+                          <input
+                            type="text"
+                            value={surname}
+                            onChange={(e) => setSurname(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-customRed"
+                            placeholder="Surname"
+                            required
+                          />
+                        </div>
+
+                        {/* Email Input */}
+                        <div className="mt-2">
+                          <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-customRed"
+                            placeholder="Email Address"
+                            required
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    {currentStep === 2 && (
+                      <>
+                        <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+                          Step 2: Additional Details
+                        </Dialog.Title>
+
+                        {/* Company Name Input */}
+                        <div className="mt-4">
+                          <input
+                            type="text"
+                            value={companyName}
+                            onChange={(e) => setCompanyName(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-customRed"
+                            placeholder="Company Name"
+                            required
+                            autoFocus
+                          />
+                        </div>
+
+                        {/* Contact Number Input */}
+                        <div className="mt-2">
+                          <input
+                            type="tel"
+                            value={contactNumber}
+                            onChange={(e) => setContactNumber(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-customRed"
+                            placeholder="Cell or Office Number"
+                            required
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    {/* Buttons */}
+                    <div className="mt-6 flex justify-between">
+                      {currentStep > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => setCurrentStep(currentStep - 1)}
+                          className="inline-flex justify-center rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none"
+                        >
+                          Back
+                        </button>
+                      )}
+                      <div className="flex-1"></div>
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        className={`inline-flex justify-center rounded-md border border-transparent bg-plum px-4 py-2 text-sm font-medium text-white hover:bg-plum-dark focus:outline-none focus:ring-2 focus:ring-plum focus:ring-offset-2 ${
+                          loading ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
+                      >
+                        {loading ? 'Processing...' : currentStep === 1 ? 'Next' : 'Submit'}
+                      </button>
+                    </div>
+                  </form>
                 </Dialog.Panel>
               </Transition.Child>
             </div>
@@ -299,11 +417,11 @@ const App: React.FC = () => {
               <Transition.Child
                 as={Fragment}
                 enter="ease-out duration-300"
-                enterFrom="opacity-0 scale-95"
-                enterTo="opacity-100 scale-100"
+                enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                enterTo="opacity-100 translate-y-0 sm:scale-100"
                 leave="ease-in duration-200"
-                leaveFrom="opacity-100 scale-100"
-                leaveTo="opacity-0 scale-95"
+                leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
               >
                 <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                   <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
