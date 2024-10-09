@@ -176,7 +176,7 @@ const App: React.FC = () => {
 
         {/* Shipment Information */}
         <div className="mb-4 sm:mb-6">
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-700 mb-2 sm:mb-3">Your Shipment</h2>
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-700 mb-2 sm:mb-3">Your Air Freight Shipment</h2>
 
           {/* Origin Field (Read-only) */}
           <div className="mb-3">
